@@ -1,5 +1,18 @@
 pragma solidity ^0.4.24;
 
+contract MeterContractFactory {
+    address[] public deployedMeters;
+
+    function createMeterContract(string propertyName, uint contractDate) public {
+        address newMeter = new SmartMeter(propertyName, contractDate, msg.sender);
+        deployedMeters.push(newMeter);
+    }
+
+    function getDeployedMeters() public view returns (address[]) {
+        return deployedMeters;
+    }
+}
+
 contract SmartMeter {
     
     struct Reading {
@@ -21,11 +34,11 @@ contract SmartMeter {
         _;
     }
 
-    function SmartMeter(string property, uint startDate) public {
-        manager = msg.sender;
-        property = property;
+    function SmartMeter(string propertyName, uint contractDate, address provider) public {
+        manager = provider;
+        property = propertyName;
         unitPrice = 20;
-        startDate = startDate;
+        startDate = contractDate;
     }
     
     function sendReading(uint timestamp, uint kWh) public restricted {
